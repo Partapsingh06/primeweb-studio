@@ -1,0 +1,20 @@
+{
+  "name": "primeweb-studio-workspace",
+  "version": "1.0.0",
+  "description": "PrimeWeb Studio — Premium Full-Stack Digital Agency Web Application",
+  "private": true,
+  "scripts": {
+    "start:backend": "npm --prefix backend start",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "build": "npm --prefix frontend run build",
+    "test": "npm --prefix backend test",
+    "test:backend": "npm --prefix backend test",
+    "seed": "npm --prefix backend run seed",
+    "create:admin": "npm --prefix backend run create:admin"
+  },
+  "keywords": ["agency", "primeweb", "mern", "react", "node", "express"],
+  "author": "PrimeWeb Studio",
+  "license": "ISC"
+}
