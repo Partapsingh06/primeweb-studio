@@ -36,26 +36,45 @@ app.use(
 );
 
 // CORS configuration
-const allowedOrigins = [
+const rawOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
+  'https://primewebstudio0.netlify.app',
   process.env.FRONTEND_URL,
   process.env.PUBLIC_SITE_URL,
-].filter(Boolean);
+];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, postman)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
-        return callback(null, true);
-      }
-      return callback(new Error('Blocked by CORS policy. Origin not allowed.'), false);
-    },
-    credentials: true,
-  })
-);
+// Normalize origins: split comma-delimited strings, trim whitespace, and strip trailing slashes
+const allowedOrigins = rawOrigins
+  .filter(Boolean)
+  .flatMap((entry) => entry.split(',').map((item) => item.trim().replace(/\/+$/, '')))
+  .filter(Boolean);
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+
+    const normalizedOrigin = origin.trim().replace(/\/+$/, '');
+    if (allowedOrigins.includes(normalizedOrigin)) {
+      return callback(null, true);
+    }
+    // In non-production, allow all origins for convenience
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked: Origin ${origin} is not allowed`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Set-Cookie'],
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+// Explicit preflight handler across all paths
+app.options('*', cors(corsOptions));
 
 // General request parsers
 app.use(express.json({ limit: '10mb' }));

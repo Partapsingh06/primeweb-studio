@@ -41,6 +41,11 @@ export const errorHandler = (err, req, res, next) => {
     return errorResponse(res, 'Invalid security token.', 401);
   }
 
+  // CORS rejection error
+  if (err.message && err.message.startsWith('CORS blocked:')) {
+    return errorResponse(res, err.message, 403);
+  }
+
   const statusCode = err.statusCode || 500;
   const message = (process.env.NODE_ENV === 'production' && statusCode === 500)
     ? 'Internal server error. Please try again later.'

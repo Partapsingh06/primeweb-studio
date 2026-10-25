@@ -1,7 +1,27 @@
 import axios from 'axios';
 
+/**
+ * Resolves and normalizes the backend API base URL:
+ * - If VITE_API_URL is provided without '/api' (e.g. https://xxx.onrender.com),
+ *   automatically appends '/api' so all mounted Express endpoints resolve correctly.
+ * - Strips any trailing slashes to avoid double slashes.
+ * - Defaults to '/api' for seamless Vite proxying in local development.
+ */
+const resolveBaseUrl = () => {
+  const envUrl = (import.meta.env.VITE_API_URL || '').trim();
+  if (!envUrl || envUrl === '/api') {
+    return '/api';
+  }
+
+  const clean = envUrl.replace(/\/+$/, '');
+  if (!clean.endsWith('/api')) {
+    return `${clean}/api`;
+  }
+  return clean;
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: resolveBaseUrl(),
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
