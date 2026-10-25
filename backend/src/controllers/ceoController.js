@@ -69,10 +69,17 @@ export const uploadCEOPhoto = async (req, res, next) => {
       profile = new CEOProfile(DEFAULT_CEO);
     }
 
+    let finalUrl = result.url;
+    if (finalUrl && finalUrl.startsWith('/')) {
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      finalUrl = `${baseUrl}${finalUrl}`;
+    }
+
+    // Capture old publicId BEFORE overwriting so we can clean up the old asset
     const oldPublicId = profile.photoPublicId;
 
     // 3. Update database record with new Cloudinary URL and publicId
-    profile.photoUrl = result.url;
+    profile.photoUrl = finalUrl;
     profile.photoPublicId = result.publicId;
     await profile.save();
 

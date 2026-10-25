@@ -402,20 +402,34 @@ export const ensureInitialData = async () => {
     }
 
     // 8. Admin User
-    const adminEmail = process.env.ADMIN_INITIAL_EMAIL || 'admin@primewebstudio.com';
+    const adminEmail = (process.env.ADMIN_INITIAL_EMAIL || 'admin@primewebstudio.com').trim().toLowerCase();
     const adminPassword = process.env.ADMIN_INITIAL_PASSWORD || 'AdminSecurePass2026!';
-    const adminName = process.env.ADMIN_INITIAL_NAME || 'PrimeWeb Admin';
+    const adminName = (process.env.ADMIN_INITIAL_NAME || 'PrimeWeb Admin').trim();
 
-    const existingAdmin = await User.findOne({ email: adminEmail.toLowerCase() });
+    const existingAdmin = await User.findOne({ email: adminEmail });
     if (!existingAdmin) {
       await User.create({
         name: adminName,
-        email: adminEmail.toLowerCase(),
+        email: adminEmail,
         password: adminPassword,
         role: 'admin',
         status: 'active',
       });
       console.log(`[InitData] Default Admin account created: ${adminEmail}`);
+    } else {
+      // Check if password reset/sync is explicitly requested via environment flag
+      const shouldReset =
+        process.env.ADMIN_RESET_PASSWORD === 'true' ||
+        process.env.ADMIN_FORCE_PASSWORD_RESET === 'true';
+
+      if (shouldReset) {
+        existingAdmin.password = adminPassword;
+        if (adminName) existingAdmin.name = adminName;
+        existingAdmin.role = 'admin';
+        existingAdmin.status = 'active';
+        await existingAdmin.save();
+        console.log(`[InitData] Admin credentials securely reset for: ${adminEmail} (triggered by ADMIN_RESET_PASSWORD)`);
+      }
     }
   } catch (error) {
     console.error('[InitData] Error ensuring initial data:', error.message);

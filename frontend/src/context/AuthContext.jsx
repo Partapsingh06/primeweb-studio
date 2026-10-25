@@ -41,7 +41,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
+    const cleanEmail = typeof email === 'string' ? email.trim() : email;
+    const res = await api.post('/auth/login', { email: cleanEmail, password });
     const { token: receivedToken, data } = res.data;
     if (receivedToken) {
       setToken(receivedToken);
@@ -55,7 +56,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
-    const res = await api.post('/auth/register', userData);
+    const cleanData = {
+      ...userData,
+      email: typeof userData?.email === 'string' ? userData.email.trim() : userData?.email,
+    };
+    const res = await api.post('/auth/register', cleanData);
     const { token: receivedToken, data } = res.data;
     if (receivedToken) {
       setToken(receivedToken);

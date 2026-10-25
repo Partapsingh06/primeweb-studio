@@ -12,7 +12,8 @@
     "test": "npm --prefix backend test",
     "test:backend": "npm --prefix backend test",
     "seed": "npm --prefix backend run seed",
-    "create:admin": "npm --prefix backend run create:admin"
+    "create:admin": "npm --prefix backend run create:admin",
+    "reset:admin": "npm --prefix backend run reset:admin"
   },
   "keywords": ["agency", "primeweb", "mern", "react", "node", "express"],
   "author": "PrimeWeb Studio",

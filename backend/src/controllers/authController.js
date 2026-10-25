@@ -57,7 +57,9 @@ export const register = async (req, res, next) => {
       return errorResponse(res, 'Please provide name, email, and password.', 400);
     }
 
-    if (!validator.isEmail(email)) {
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!validator.isEmail(cleanEmail)) {
       return errorResponse(res, 'Please provide a valid email address.', 400);
     }
 
@@ -65,19 +67,19 @@ export const register = async (req, res, next) => {
       return errorResponse(res, 'Password must be at least 8 characters long.', 400);
     }
 
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await User.findOne({ email: cleanEmail });
     if (existingUser) {
       return errorResponse(res, 'An account with this email address already exists.', 409);
     }
 
     // Role is strictly forced to 'client' for public registration
     const user = await User.create({
-      name,
-      email: email.toLowerCase(),
+      name: name.trim(),
+      email: cleanEmail,
       password,
       role: 'client',
-      phone: phone || '',
-      company: company || '',
+      phone: phone ? phone.trim() : '',
+      company: company ? company.trim() : '',
     });
 
     return sendTokenResponse(user, 201, res, 'Client account registered successfully.');
@@ -97,7 +99,8 @@ export const login = async (req, res, next) => {
       return errorResponse(res, 'Please provide email and password.', 400);
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    const cleanEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+    const user = await User.findOne({ email: cleanEmail }).select('+password');
     if (!user) {
       return errorResponse(res, 'Invalid email or password.', 401);
     }
@@ -199,7 +202,8 @@ export const forgotPassword = async (req, res, next) => {
       return errorResponse(res, 'Please provide your email address.', 400);
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const cleanEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+    const user = await User.findOne({ email: cleanEmail });
     if (!user) {
       // Return neutral response for security to prevent user enumeration
       return successResponse(res, 'If that email is registered, password reset instructions have been dispatched.');

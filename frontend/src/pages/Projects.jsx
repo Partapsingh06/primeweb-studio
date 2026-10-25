@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ExternalLink, Code2, Sparkles, Eye, ArrowRight } from 'lucide-react';
-import api from '../services/api';
+import api, { getImageUrl } from '../services/api';
 
 const Projects = ({ onOpenQuote }) => {
   const [projects, setProjects] = useState([]);
@@ -99,7 +99,7 @@ const Projects = ({ onOpenQuote }) => {
                 <div className="h-48 bg-gradient-to-br from-brand-lavender to-brand-lavender-border/40 p-6 flex flex-col justify-between relative overflow-hidden">
                   {proj.thumbnail && (
                     <img
-                      src={proj.thumbnail}
+                      src={getImageUrl(proj.thumbnail)}
                       alt={proj.title}
                       className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />

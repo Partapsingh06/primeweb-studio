@@ -3,6 +3,11 @@
   publish = "dist"
   command = "npm run build"
 
+[build.environment]
+  # Vite bakes this URL into the production bundle at build time.
+  # Points the Netlify frontend to the production backend on Render.
+  VITE_API_URL = "https://primeweb-studio.onrender.com"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

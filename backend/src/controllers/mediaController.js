@@ -18,11 +18,17 @@ export const uploadMedia = async (req, res, next) => {
       folder: 'primeweb_studio/media',
     });
 
+    let finalUrl = result.url;
+    if (finalUrl && finalUrl.startsWith('/')) {
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      finalUrl = `${baseUrl}${finalUrl}`;
+    }
+
     return successResponse(
       res,
       'Image uploaded successfully.',
       {
-        url: result.url,
+        url: finalUrl,
         publicId: result.publicId,
         filename: req.file.filename,
         originalName: req.file.originalname,
@@ -42,6 +48,7 @@ export const listMedia = async (req, res, next) => {
       return successResponse(res, 'Media list loaded.', { files: [] });
     }
 
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
     const fileNames = fs.readdirSync(uploadDir);
     const files = fileNames
       .filter((file) => /\.(jpg|jpeg|png|webp|svg|gif)$/i.test(file))
@@ -49,7 +56,7 @@ export const listMedia = async (req, res, next) => {
         const stats = fs.statSync(path.join(uploadDir, file));
         return {
           filename: file,
-          url: `/uploads/${file}`,
+          url: `${baseUrl}/uploads/${file}`,
           size: stats.size,
           createdAt: stats.birthtime,
         };

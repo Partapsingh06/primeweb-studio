@@ -227,3 +227,46 @@ test('15. Input Validation & Error Handling — Invalid Email on Registration', 
   assert.strictEqual(res.status, 400);
   assert.strictEqual(res.body.success, false);
 });
+
+test('16. Authentication — Tolerates whitespace in email input on Login', async () => {
+  const res = await request(app)
+    .post('/api/auth/login')
+    .send({
+      email: '  client1@example.com  ',
+      password: 'ClientPassword123!',
+    });
+
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.success, true);
+  assert.ok(res.body.token);
+});
+
+test('17. Admin Password Sync — Reset password when ADMIN_RESET_PASSWORD is set', async () => {
+  const { ensureInitialData } = await import('../src/config/initData.js');
+
+  process.env.ADMIN_INITIAL_EMAIL = 'admin.test@primewebstudio.com';
+  process.env.ADMIN_INITIAL_PASSWORD = 'NewAdminPassword456!';
+  process.env.ADMIN_RESET_PASSWORD = 'true';
+
+  await ensureInitialData();
+
+  // Old password should now fail
+  const oldLogin = await request(app)
+    .post('/api/auth/login')
+    .send({
+      email: 'admin.test@primewebstudio.com',
+      password: 'AdminPassword123!',
+    });
+  assert.strictEqual(oldLogin.status, 401);
+
+  // New password should succeed
+  const newLogin = await request(app)
+    .post('/api/auth/login')
+    .send({
+      email: 'admin.test@primewebstudio.com',
+      password: 'NewAdminPassword456!',
+    });
+  assert.strictEqual(newLogin.status, 200);
+  assert.strictEqual(newLogin.body.success, true);
+});
+

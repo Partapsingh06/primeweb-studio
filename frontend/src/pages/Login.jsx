@@ -24,7 +24,8 @@ const Login = () => {
     setError('');
 
     try {
-      const user = await login(formData.email, formData.password);
+      const trimmedEmail = formData.email ? formData.email.trim() : '';
+      const user = await login(trimmedEmail, formData.password);
       if (user.role === 'admin') {
         navigate('/admin/dashboard');
       } else {

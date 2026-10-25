@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, Trash2, Copy, Check, Image as ImageIcon, AlertCircle } from 'lucide-react';
-import api from '../../services/api';
+import api, { getImageUrl } from '../../services/api';
 
 const AdminMedia = () => {
   const [files, setFiles] = useState([]);
@@ -115,7 +115,7 @@ const AdminMedia = () => {
             >
               <div className="h-36 bg-slate-100 flex items-center justify-center overflow-hidden relative">
                 <img
-                  src={file.url}
+                  src={getImageUrl(file.url)}
                   alt={file.filename}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                 />
@@ -128,11 +128,11 @@ const AdminMedia = () => {
 
                 <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-100">
                   <button
-                    onClick={() => handleCopy(file.url)}
+                    onClick={() => handleCopy(getImageUrl(file.url))}
                     className="inline-flex items-center space-x-1 text-[11px] font-semibold text-brand-primary hover:text-brand-secondary"
                     title="Copy URL"
                   >
-                    {copiedUrl === file.url ? (
+                    {copiedUrl === getImageUrl(file.url) ? (
                       <>
                         <Check className="w-3.5 h-3.5 text-emerald-600" />
                         <span className="text-emerald-600">Copied</span>

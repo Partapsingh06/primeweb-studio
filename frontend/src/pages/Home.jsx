@@ -21,7 +21,7 @@ import {
   HelpCircle,
   Eye,
 } from 'lucide-react';
-import api from '../services/api';
+import api, { getImageUrl } from '../services/api';
 
 const Home = ({ onOpenQuote }) => {
   const [services, setServices] = useState([]);
@@ -468,7 +468,7 @@ const Home = ({ onOpenQuote }) => {
               <div className="h-48 bg-gradient-to-br from-brand-lavender to-brand-lavender-border/40 p-6 flex flex-col justify-between relative overflow-hidden">
                 {proj.thumbnail && (
                   <img
-                    src={proj.thumbnail}
+                    src={getImageUrl(proj.thumbnail)}
                     alt={proj.title}
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -887,7 +887,7 @@ const Home = ({ onOpenQuote }) => {
                 <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl overflow-hidden bg-brand-primary/10 border-2 border-brand-lavender-border flex items-center justify-center shadow-card">
                   {ceo?.photoUrl ? (
                     <img
-                      src={ceo.photoUrl}
+                      src={getImageUrl(ceo.photoUrl)}
                       alt={ceo.name || 'Partap Singh'}
                       className="w-full h-full object-cover"
                     />
